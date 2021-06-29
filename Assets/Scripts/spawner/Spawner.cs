@@ -55,8 +55,8 @@ namespace spawner {
                     continue;
                 }
 
-                var posX = plane.center.x + Random.Range(-plane.size.x / 4, plane.size.x / 4);
-                var posZ = plane.center.z + Random.Range(-plane.size.y / 4, plane.size.y / 4);
+                var posX = plane.center.x + Random.Range(-plane.size.x / 3, plane.size.x / 3);
+                var posZ = plane.center.z + Random.Range(-plane.size.y / 3, plane.size.y / 3);
 
                 hamsterPosition = new Vector3(posX, plane.center.y, posZ);
 
