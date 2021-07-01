@@ -14,9 +14,6 @@ namespace spawner {
         private ARRaycastManager raycastManager;
 
         [SerializeField]
-        private GameObject marker;
-
-        [SerializeField]
         private Hamster hamsterToSpawn;
 
         private float spawnTime = 0;
@@ -26,39 +23,43 @@ namespace spawner {
         private const int MIN_SPAWN_TIME = 2;
         private const int MAX_SPAWN_TIME = 8;
 
-        private const float MIN_DISTANCE = 0.15f;
         private const float MAX_DISTANCE = 5f;
 
-        private void Start() {
-            marker.SetActive(false);
-        }
+        private const float HEIGHT_OFFSET = 0.08f;
 
         private void Update() {
 
             var width = Screen.width;
             var height = Screen.height;
-            var center = new Vector2(width/ 2, (height / 2) - height * 0.08f);
+
+            var randomWidth = Random.Range(width / 4, width * 3 / 4);
+            var centerHeight = (height / 2) - height * HEIGHT_OFFSET;
+
+            var spawnPoint = new Vector2(randomWidth, centerHeight);
 
             hits.Clear();
-            raycastManager.Raycast(center, hits, TrackableType.PlaneWithinBounds);
+            raycastManager.Raycast(spawnPoint, hits, TrackableType.PlaneWithinBounds);
 
             if(hits.Count > 0) {
-                var targetPos = hits[0].pose.position;
-                var targetRot = hits[0].pose.rotation;
+                var pos = hits[0].pose.position;
+                var rot = hits[0].pose.rotation;
 
-                marker.transform.position = targetPos;
-                marker.transform.rotation = targetRot;
-
-                marker.SetActive(true);
+                transform.position = pos;
+                transform.rotation = rot;
 
             } else {
-                marker.SetActive(false);
+                return;
             }
 
 
-            if (Time.time >= spawnTime && marker.activeInHierarchy) {
+            if (Time.time >= spawnTime && gameObject.activeInHierarchy) {
 
-                var position = GetHamsterPosition();
+                var position = transform.position;
+                var distance = Vector3.Distance(Camera.main.transform.position, position);
+
+                if(distance > MAX_DISTANCE) {
+                    return;
+                }
 
                 var hamster = Instantiate(hamsterToSpawn, position, Quaternion.identity);
                 hamster.transform.LookAt(Camera.main.transform);
@@ -69,9 +70,6 @@ namespace spawner {
             }
         }
 
-        private Vector3 GetHamsterPosition() {
-            return marker.transform.position;
-        }
     }
 }
 
